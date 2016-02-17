@@ -89,7 +89,7 @@ Here's an example to make it clear (I commented the most important lines):
 * **allowed-files**: List of all files and metadata we want to make available and their relative types.
 
 ####Adding new commands
-Commands list is completelly extensible: You have only to implement their relative `json` file.
+Commands list is completely extensible: You have only to implement their relative `json` file.
 Here's an example of a command core implementation file:
 
     {
