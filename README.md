@@ -1,5 +1,7 @@
 # CMShell
 
+> Why not?
+
 CMShell is a simple, highly customizable and easily extensible static content managment system
 that allows you to share contents in a very original way.
 
