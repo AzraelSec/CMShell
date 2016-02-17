@@ -1,0 +1,15 @@
+{
+    "username" : "AzraelSec",
+    "hostname" : "DarkNet",
+    "banner" : "Hello Azrael, my old friend",
+    "show-help" : true,
+    "shell-title" : "Testing page",
+    "allowed-commands" : [
+        "ls", "echo", "help", "clear", "man", "cat"
+    ],
+    "avaiable-files" : [
+        { "filename" : "file1", "type" : "file"},
+        { "filename" : "link", "type" : "link", "destination" : "www.google.it" },
+        { "filename" : "standard" }
+    ]
+}

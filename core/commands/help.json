@@ -1,0 +1,5 @@
+{
+    "name" : "help",
+    "description" : "help",
+    "source" : "function(env, params){env.push_output(['Allowed commands:', '~>[&nbsp;' + env.command_names.join(' ') + ' ]'].join('<br>'))}"
+}

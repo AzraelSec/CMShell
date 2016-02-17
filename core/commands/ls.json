@@ -1,0 +1,5 @@
+{
+        "name" : "ls",
+        "description" : "ls",
+        "source" : "function(env, args){var file_list = env.file_informations;var output = '';for(i in file_list){if(file_list[i]['type'] == 'file')output += '<span class=\"blue\">' + file_list[i]['filename'] + '</span> ';else if(file_list[i]['type'] == 'link')output += '<span class=\"green\">' + file_list[i]['filename'] + '</span> ';}env.push_output(output);}"
+}

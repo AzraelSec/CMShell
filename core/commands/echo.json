@@ -1,0 +1,5 @@
+{
+        "name" : "echo",
+        "description" : "echo [string(s)]",
+        "source" : "function(env, params){ env.push_output(params.join('  ')) }"
+}
