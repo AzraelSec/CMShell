@@ -335,7 +335,7 @@ var shell = function()
             var help_message = 'Type \'help\' for a complete command list summary. <br>' +
                                 'Use command \'man\' to have a usage message about single commands. <br>' +
                                 'Have fun with CMShell platform. <br>' +
-                                'Credits to Federico Gerardi aka AzraelSec (VoidSec Team)';
+                                'Credits to Federico Gerardi aka AzraelSec';
             
             
             newparagraph.html(help_message);
