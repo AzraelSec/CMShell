@@ -1,0 +1,9 @@
+{
+    "name" : "pwd",
+    "description" : "pwd",
+    "source" : [
+                "function(env, args)",
+                "{",
+                    "env.push_output(env.directory_position);",
+                "}"]
+}

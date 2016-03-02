@@ -1,5 +1,10 @@
 {
     "name" : "clear",
     "description" : "clear",
-    "source" : "function(env, args){env.clear_terminal();}"
+    "source" : [
+                "function(env, args)",
+                "{",
+                    "env.clear_terminal();",
+                "}"
+               ]
 }

@@ -9,7 +9,7 @@ that allows you to share contents in a very original way.
     <tr>
         <th>Version</th>
         <td>
-            1.0
+            1.5
         </td>
     </tr>
     <tr>
@@ -19,6 +19,10 @@ that allows you to share contents in a very original way.
     <tr>
         <th>Author</th>
         <td>Federico Gerardi aka AzraelSec</td>
+    </tr>
+    <tr>
+        <th>Author Website</th>
+        <td>http://www.azraelsec.it</td>
     </tr>
     <tr>
         <th>Copyright</th>
@@ -48,6 +52,12 @@ What about the use of a shell?
 ##Dependencies
 * jQuery (Any Version)
 
+##Cool Features
+* Commands and files completition
+* History management
+* Expandable list of commands
+* Directory (absolute and relative path interpretation) **NEW**
+
 ##System Organizzation
 The whole system organizes data and options statically using a tree structure.
 
@@ -69,19 +79,35 @@ CMShell is quite completely customizable in a lot of different ways. In particul
 dictionary that collects all the information we want to make available to the system.
 Here's an example to make it clear (I commented the most important lines):  
 
-    {  
+    {
         "username" : "AzraelSec",
-        "hostname" : "DarkNet",  
-        "banner" : "Hello Azrael, my old friend",  
-        "show-help" : true,  
-        "shell-title" : "Testing page",    
-        "allowed-commands" : [  
-            "ls", "echo", "help", "clear", "man", "cat"  
+        "hostname" : "DarkNet",
+        "banner" : "Hello Azrael, my old friend",
+        "show-help" : true,
+        "shell-title" : "Testing page",
+        "allowed-commands" : [
+            "ls", "echo", "help", "clear", "man", "cat", "cd", "pwd"
         ],
-        "avaiable-files" : [  
+        
+        "avaiable-files" : [
             { "filename" : "file1", "type" : "file"},
-            { "filename" : "link", "type" : "link", "destination" : "www.google.it" },  
-            { "filename" : "standard" }  
+            
+            { "filename" : "google_link", "type" : "link", "destination" : "www.google.it" },
+            
+            { "filename" : "standard" },
+            
+            { "filename" : "example_directory",
+                "type" : "directory",
+                "within" : [
+                        { "filename" : "file2", "type" : "file" },
+                        { "filename" : "AzraelSec_Home", "type" : "link", "destination" : "www.azraelsec.it" },
+                        { "filename" : "inner_dir", "type" : "directory",
+                            "within" : [
+                                    { "filename" : "LinkedIn", "type" : "link", "destination" : "https://it.linkedin.com/in/azraelsec" }
+                                ]
+                        }
+                    ]
+            }
         ]
     }
 
@@ -97,20 +123,30 @@ Here's an example of a command core implementation file:
     {
             "name" : "echo",
             "description" : "echo [string(s)]",
-            "source" : "function(env, params){ env.push_output(params.join('  ')) }"
+            "source" : [
+                    "function(env, params)",
+                    "{",
+                        "env.push_output(params.join('  '));",
+                    "}"
+                   ]
     }
 
 * **name**: Command name and string used to call function within the shell.
 * **description**: Description useful for other important commands like `man`.
-* **source**: Function executed when shell recalls the command. Receives the reference to the shell environment (`env`)
+* **source**: Function executed when shell recalls the command (Splitted in array for indentation). Receives the reference to the shell environment (`env`)
 , that allow you to use its methods and properties, and the list of arguments passed.
+
+Commands can interact with CMShell through an environment reference and a list of all the arguments passed
+ in input during command calling.
 
 *TO BE CONTINUED*
 
 #Coming Soon
+* Fix all (complex) directory management issues
+* Full documentation for adding new commands
+* Point out CMShell APIs
+* Plug-in System
 * Temporary variables
 * User authentication and sessions
 * Back-end for CRUD operation on files
 * Pipe implementation
-* Directory implementation
-

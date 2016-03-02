@@ -41,6 +41,7 @@ body
     font-family: Terminus,courier,monospace,fixed;
     font-size: 14px;
     letter-spacing: 1.2px;
+    display: inline;
 }
 
 /*
@@ -64,6 +65,11 @@ body
 .blue
 {
     color: #1a1aff;
+}
+
+.white
+{
+    color: white;
 }
 
 .floated

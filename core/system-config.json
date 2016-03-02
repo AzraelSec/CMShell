@@ -5,11 +5,27 @@
     "show-help" : true,
     "shell-title" : "Testing page",
     "allowed-commands" : [
-        "ls", "echo", "help", "clear", "man", "cat"
+        "ls", "echo", "help", "clear", "man", "cat", "cd", "pwd"
     ],
+    
     "avaiable-files" : [
         { "filename" : "file1", "type" : "file"},
-        { "filename" : "link", "type" : "link", "destination" : "www.google.it" },
-        { "filename" : "standard" }
+        
+        { "filename" : "google_link", "type" : "link", "destination" : "www.google.it" },
+        
+        { "filename" : "standard" },
+        
+        { "filename" : "example_directory",
+            "type" : "directory",
+            "within" : [
+                    { "filename" : "file2", "type" : "file" },
+                    { "filename" : "AzraelSec_Home", "type" : "link", "destination" : "www.azraelsec.it" },
+                    { "filename" : "inner_dir", "type" : "directory",
+                        "within" : [
+                                { "filename" : "LinkedIn", "type" : "link", "destination" : "https://it.linkedin.com/in/azraelsec" }
+                            ]
+                    }
+                ]
+        }
     ]
 }

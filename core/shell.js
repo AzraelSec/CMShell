@@ -33,6 +33,9 @@ var shell = function()
     //Keep track of the readable file list;
     this.file_informations = [];
     
+    //Keep track of the actual position in directory tree;
+    this.directory_position = "/";
+    
     //Keep track of last commands executed;
     this.history = [];
     
@@ -44,6 +47,114 @@ var shell = function()
     
     //Input field reference;
     this.input_field = $('#shell-input-field');
+    
+    //Method for head file path filtering and retriving;
+    this.filter_head_path = function(path_string)
+    {
+        return path_string.replace(/^.*[\\\/]/, '');
+    };
+    
+    //Method for parent file path filtering and retriving;
+    this.filter_parent_path = function(path_string)
+    {
+        var matched = path_string.match(/^(\/*.*\/)/);
+        return matched[matched.length - 1];
+    }
+    
+    //Method for actual directory path crafting;
+    this.get_actual_directory_path = function()
+    {
+        return this.directory_position;
+    };
+    
+    //Method for directory full path reconstruction considering actual path and relative expressions;
+    this.directory_eval = function(expression)
+    {
+        //Delete './' chars;
+        var del_same_path = function(path)
+        {
+            if(path.match(/(^|\/)\.\)/)) return path.replace(/(^|\/)\.\)/, '/');
+            else return path;
+        };
+        
+        //Nested function for relative-absolute path shifting;
+        var make_absolute = function(relative_path)
+        {
+            if(relative_path.match(/^[^\/]/))
+                return instance.get_actual_directory_path() + '/' + relative_path;
+            else return relative_path;
+        };
+        
+        //Nested function for null path removing;
+        var del_null_path = function(path)
+        {
+            return path.replace(/\/+/g, '/');
+        };
+        
+        //Nested function for ending slashes removing;
+        var del_end_slashes = function(path)
+        {
+            if(path == '/') return path;
+            else return path.replace(/\/*$/g, '');
+        };
+        
+        //Nested function for recursively backtracking (..) interpretation;
+        var expand_backtracking = function(path)
+        {
+            var external;
+            while((external = path.match(/^(.+?\/?\.\.)/)))
+            {
+                var rel = external[external.length - 1];
+                var internal;
+                if((internal = path.match(/^(.+?)\/?\.\./)))
+                {
+                    if(internal[internal.length - 1] == '/')
+                        path = path.replace(rel, '/');
+                    else
+                    {
+                        matched = rel.match(/^(.*)\/[^\/]*\/\.\..*$/)
+                        var nop = matched[matched.length - 1];
+                        
+                        path = path.replace(rel, nop);
+                        if(path.length == 0) return '/';
+                    }
+                }
+            }
+            
+            return path;
+        };
+        
+        //If void expression, return null indicating error situation;
+        if(expression.length == 0)
+            return '/';
+        
+        //Applying all defined path expression inflating;
+        expression = del_same_path(expression);
+        expression = make_absolute(expression);
+        expression = del_null_path(expression);
+        expression = del_end_slashes(expression);
+        expression = expand_backtracking(expression);
+        
+        //Reapplying del_null_path because expanding backtracking could produce null paths;
+        expression = del_null_path(expression);
+        
+        return expression;
+    };
+    
+    //Method for file (or directory) interpretation and object reconstruction;
+    this.file_eval_obj = function(expression)
+    {        
+        expression = this.directory_eval(expression);
+        var inode = this.filter_head_path(expression);
+        var path = this.filter_parent_path(expression);
+        
+        if(inode == '' && path == '/')
+            return instance.file_informations;
+        else
+            for(var i in instance.file_informations)
+                if(inode == instance.file_informations[i]['filename'] && path == instance.file_informations[i]['path'])
+                    return instance.file_informations[i];
+    };
     
     //Method for prompt string array retriving;
     this.get_prompt_string = function()
@@ -76,6 +187,7 @@ var shell = function()
     this.push_output = function(output)
     {
         var elements = this.get_prompt_string();
+        elements.push(" ", instance.input_field.val());
         
         for(elem in elements)
             this.output_field.append(elements[elem]);
@@ -111,12 +223,27 @@ var shell = function()
     {
         //Initially the array of possible values is empty;
         var valid_values = [];
-        var size = partial_string.length;
+        
+        //Informations filtering;
+        if(partial_string.match(/^.*\/$/))
+        {
+            partial_string = this.directory_eval(partial_string);
+            partial_string += '/';
+        }
+        else partial_string = this.directory_eval(partial_string);
+        
+        var partial_name = this.filter_head_path(partial_string);
+        var parent_path = this.filter_parent_path(partial_string);
+        var size = partial_name.length;
         
         for(var i in instance.file_informations)
         {
-            if(partial_string == instance.file_informations[i]['filename'].substring(0, size))
-                valid_values.push(instance.file_informations[i]['filename']);
+            if(partial_name == instance.file_informations[i]['filename'].substring(0, size))
+                if(parent_path == instance.file_informations[i]['path'])
+                    if(instance.file_informations[i]['type'] == 'directory')
+                        valid_values.push(parent_path + instance.file_informations[i]['filename'] + '/');
+                    else
+                        valid_values.push(parent_path + instance.file_informations[i]['filename']);
         }
         
         return valid_values;
@@ -188,9 +315,12 @@ var shell = function()
                         var result = instance.find_command(instance.input_field.val());
                         if(result.length == 1)
                             instance.input_field.val(result[0]);
-                        
-                        if(result.length > 1)
+                        else if(result.length > 1)
+                        {
+                            var save = instance.input_field.val();
                             instance.push_output(result.join(' '));
+                            instance.input_field.val(save);
+                        }
                     }
                     else
                     {
@@ -208,14 +338,19 @@ var shell = function()
                                 ) + ' ' + result[0]
                             );
                         }
-                        else
+                        else if(result.length > 1)
+                        {
+                            var save = instance.input_field.val();
                             instance.push_output(result.join(' '));
+                            instance.input_field.val(save);
+                        }
                     }
                 }
                 
                 //Handler for ARROW_UP and previous history lookup;
                 if(event.which == 38 || event.keyCode == 38)
                 {
+                    event.preventDefault(); //Preventing tab focus switching;
                     instance.history_backwards();
                 }
                 
@@ -223,12 +358,14 @@ var shell = function()
                 
                 if(event.which == 40 || event.keyCode == 40)
                 {
+                    event.preventDefault(); //Preventing tab focus switching;
                     instance.history_forwards();
                 }
                 
                 //Handler for ENTER and command execution;
                 if(event.which == 13 || event.keyCode == 13)
                 {
+                    event.preventDefault(); //Preventing tab focus switching;
                     var string_splitted = instance.input_field.val().split(' ');
                     
                     var command = string_splitted[0];
@@ -238,6 +375,12 @@ var shell = function()
                     instance.call_command(command, instance, params);
                     instance.input_field.focus(); //Input field must take the focus;
                 }
+            }
+        );
+        
+        this.input_field.keyup(
+            function () {
+                instance.input_field.focus();//Input field must take the focus;
             }
         );
     }
@@ -258,7 +401,7 @@ var shell = function()
                         {
                             //Updating source code and function names references;
                             instance.command_names.push(data['name']);
-                            instance.command_bodies[data['name']] = data['source'];
+                            instance.command_bodies[data['name']] = data['source'].join('\n');
                             instance.command_descriptions[data['name']] = data['description'];
                         }
                     }
@@ -272,15 +415,18 @@ var shell = function()
         };
         
         //Nested function to load all file informations from configuration;
-        var files_load  = function(file_metadata_array)
+        var files_load  = function(file_metadata_array, path)
         {
             //File metadata loading;
             for (i in file_metadata_array)
             {
                 if('filename' in file_metadata_array[i]) //Filename key presence checking;
                 {
+                    //Path location assignment;
+                    file_metadata_array[i]['path'] = path; //Used like hash string;
+                    
                     if('type' in file_metadata_array[i]) //Type key presence checking;
-                    {
+                    {                        
                         if(file_metadata_array[i]['type'] == 'file')
                             instance.file_informations.push(file_metadata_array[i]);
                         
@@ -296,7 +442,19 @@ var shell = function()
                                 instance.file_informations.push(file_metadata_array[i]);
                             }
                             else
-                                console.log('Error during loading metadata: ' + file_metadata_array[i]);
+                                console.log('Error during loading link: ' + file_metadata_array[i]['filename']);
+                        }
+                        
+                        if(file_metadata_array[i]['type'] == 'directory')
+                        {
+                            //If file is a directory one ~> Load files re
+                            if('within' in file_metadata_array[i])
+                            {
+                                instance.file_informations.push(file_metadata_array[i]);
+                                files_load(file_metadata_array[i]['within'], path + file_metadata_array[i]['filename'] + '/');
+                            }
+                            else
+                                console.log('Error during loading directory: ' + file_metadata_array[i]['filename']);
                         }
                     }
                     else //If type isn't specified, i assume it's a regular file;
@@ -308,7 +466,7 @@ var shell = function()
                     }
                 }
                 else
-                    console.log('Error during loading metadata: ' + file_metadata_array[i]);
+                    console.log('Error during loading metadata: ' + JSON.stringify(file_metadata_array[i]));
             }
         }
         
@@ -349,7 +507,6 @@ var shell = function()
             document.title = 'CMShell - ' + title;
         }
         
-        console.log("Configuration requested");
         $.ajax(
             {
                 url: "core/system-config.json",
@@ -362,7 +519,7 @@ var shell = function()
                     
                     console.log('Commands and files loading started');
                     commands_load(instance.configuration['allowed-commands']);
-                    files_load(instance.configuration['avaiable-files']);
+                    files_load(instance.configuration['avaiable-files'], instance.directory_position);
                     
                     //Opening graphical construction;
                     set_title(instance.configuration['shell-title']);
@@ -382,7 +539,7 @@ var shell = function()
             function (xhr, status, error)
             {
                 console.log("Error during configuration loading.");
-                shell.output_produce("[ERROR] Shell init configuration error! Please, refresh the page.");
+                instance.output_produce("[ERROR] Shell init configuration error! Please, check config and refresh the page.");
             }
         );
     };

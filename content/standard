@@ -1,2 +1,4 @@
-Questo è un semplice file di esempio.
-Tutto verrà interpretato correttamente.
+This simple text will be printed out.
+
+Files are properly tested against XSS attacks.
+<script>alert(1)</script>

@@ -1,5 +1,16 @@
 {
     "name" : "man",
     "description" : "man [command]",
-    "source" : "function(env, args){if(args.length > 0)if($.inArray(args[0], env.command_names) >= 0)env.push_output(env.command_descriptions[args[0]]);else env.push_output('Manual not found for this command.');else env.push_output('Too few parameters.')}"
+    "source" : [
+                "function(env, args)",
+                "{",
+                    "if(args.length > 0)",
+                        "if($.inArray(args[0], env.command_names) >= 0)",
+                            "env.push_output(env.command_descriptions[args[0]]);",
+                        "else",
+                            "env.push_output('Manual not found for this command.');",
+                    "else",
+                        "env.push_output('Too few parameters.');",
+                "}"
+               ]
 }
