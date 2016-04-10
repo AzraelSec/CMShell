@@ -1,0 +1,18 @@
+{
+    "name" : "Switch Light On",
+    "description" : "Plug-in that makes a light restyling",
+    "dependencies" : ["test"],
+    "callable" : false,
+    "source" : [ "function(env)" ,
+                "{",
+                    "$('body').css('background-color', 'white');",
+                    "$('#shell-input-field').css('color', 'black');",
+                    "$('body').css('color', 'black');",
+                    
+                    "//Next row is a js trick for css rules adding;",
+                    "document.styleSheets[0].insertRule('.regular-file-label{color:black}', document.styleSheets[0].cssRules.length)",
+                    "env.execute_plugin_source('test', ['switch-light-on']);",
+                "}"
+               ]
+    
+}

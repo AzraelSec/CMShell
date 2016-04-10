@@ -1,6 +1,7 @@
 {
     "name" : "cat",
     "description" : "cat [filename]",
+    "dependencies" : [],
     "source" : [
                 "function(env, args)",
                 "{",

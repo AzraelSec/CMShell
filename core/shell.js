@@ -42,11 +42,21 @@ var shell = function()
     //Keep track of last history item grubbed;
     this.history_index = -1;
     
+    //Keep track of all plugins information structures;
+    this.plugins_informations = {};
+    
     //Output field reference;
     this.output_field = $('#shell-output-field');
     
     //Input field reference;
     this.input_field = $('#shell-input-field');
+    
+    //Method for plugin source code execution (Usefull for plugins interaction!);
+    this.execute_plugin_source = function(plugin_name, args)
+    {
+        var handler = eval('(' + this.plugins_informations[plugin_name]['source'].join('\n') + ')');
+        handler(instance, args);
+    };
     
     //Method for head file path filtering and retriving;
     this.filter_head_path = function(path_string)
@@ -468,7 +478,104 @@ var shell = function()
                 else
                     console.log('Error during loading metadata: ' + JSON.stringify(file_metadata_array[i]));
             }
-        }
+        };
+        
+        /*
+         * NOTE: I assume that all plugins are composed only by a main 'source' function, but they'll have a more complex structure in the future;
+         *
+         * NOTE: Algorithm for dependency management in testing phase;
+         */
+        //Nested function to activate plugin metadata;
+        var activate_plugins = function(enabled_functions, metadata_pool)
+        {
+            //Already executed plugin references;
+            var executed = [];
+            
+            //Nested function to call main callable plugins function;
+            var plugin_execute = function(pool, resolved, plugin_name)
+            {
+                if ($.inArray(name, resolved) == -1)
+                {
+                    //Call plugin only if it's not a functional one;
+                    if (pool[plugin_name]['callable'] == false)
+                    {
+                        var handler = eval('(' + pool[plugin_name]['source'].join('\n') + ')');
+                        handler(instance);
+                    }
+                    resolved.push(plugin_name);
+                }
+                
+                return true;
+            };
+            
+            //Nested function that checks plugins dependencies and execute it in a smart way;
+            var plugins_examination = function(resolved, pool, node)
+            {
+                if (node in pool)
+                {
+                    //BASE CASE;
+                    if(pool[node]['dependencies'].length == 0)
+                        return plugin_execute(pool, resolved, node);
+                    else
+                    {
+                        //RECURSIVE CASE;
+                        var correct = true;
+                        
+                        for(var i in pool[node]['dependencies'])
+                            correct = correct && plugins_examination(resolved, pool, pool[node]['dependencies'][i])
+                        
+                        if (correct == true)
+                            return plugin_execute(pool, resolved, node);
+                        else
+                            console.log('Dependency unmet for module: ' + pool[node]['name']);
+                    }
+                }
+                else console.log('Plugin non-existent or not loaded: ' + node);
+                
+                return false;
+            };
+            
+            //Big loop for plugins metadata loading;
+            for(var i = 0; i < enabled_functions.length; i++)
+            {
+                //Functional closure for looping correctly;
+                (function(i, metadata_pool)
+                {
+                    $.ajax(
+                            {
+                                url: 'core/plugins/' + enabled_functions[i] + '.json',
+                                dataType: 'json',
+                                async: false, //Async call is so uncomfortable...!;
+                                success: function(data)
+                                {
+                                    //Checking plugin structure consistency;
+                                    if ('name' in data && 'description' in data && 'source' in data && 'dependencies' in data && 'callable' in data)
+                                        metadata_pool[data['name']] = data;
+                                    else
+                                        console.log('Error during loading metadata: ' + JSON.stringify(data));  
+                                },
+                                error: function()
+                                {
+                                    console.log('Error during retriving plugin source from url: core/plugins/' + enabled_functions[i] + '.json');
+                                }
+                            })
+                        .always(
+                            function()
+                            {
+                                //If processed all correct plugins ~> examinate it all;
+                                if (i == enabled_functions.length - 1)
+                                {
+                                    //Big loop for plugins recursive execution;
+                                    $.each(metadata_pool, function(key, value)
+                                    {
+                                        plugins_examination(executed, metadata_pool, key);
+                                    });
+                                }
+                            })
+                }
+                )(i, metadata_pool);
+            }
+        };
         
         //Nested function to print banner set in system configuration;
         var print_banner = function(banner_string)
@@ -481,7 +588,7 @@ var shell = function()
             newparagraph.html( '~>[' + banner_string + ']<~' );
             newdiv.append(newparagraph);
             external.prepend(newdiv);
-        }
+        };
         
         //Nested function to print help message enabled in system configuration;
         var print_help = function()
@@ -499,13 +606,13 @@ var shell = function()
             newparagraph.html(help_message);
             newdiv.append(newparagraph);
             external.prepend(newdiv);
-        }
+        };
         
         //Nested function to set new shell title from system configuration;
         var set_title = function(title)
         {
             document.title = 'CMShell - ' + title;
-        }
+        };
         
         $.ajax(
             {
@@ -533,6 +640,9 @@ var shell = function()
                     //Binding establishment and ready to go;                    
                     instance.makeBindings();
                     instance.print_prompt();
+                    
+                    //Plugins loading and executing;
+                    activate_plugins(instance.configuration['active-plugins'], instance.plugins_informations);
                 }
             }
         ).fail(

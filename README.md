@@ -56,7 +56,8 @@ What about the use of a shell?
 * Commands and files completition
 * History management
 * Expandable list of commands
-* Directory (absolute and relative path interpretation) **NEW**
+* Directory (absolute and relative path interpretation)
+* Plug-in System (with dependency management) **NEW**
 
 ##System Organizzation
 The whole system organizes data and options statically using a tree structure.
@@ -64,6 +65,7 @@ The whole system organizes data and options statically using a tree structure.
 * ->CMShell
   * ->core
      * ->commands
+     * ->plugins 
   * ->content
   * ->js
   * ->style
@@ -76,7 +78,7 @@ There are two (just for now) type of files:
 
 ####System Configuration
 CMShell is quite completely customizable in a lot of different ways. In particular, There is a simple configuration file named `system-config.json` in which is implemented a
-dictionary that collects all the information we want to make available to the system.
+dictionary that collects all the informations we want to make available to the system.
 Here's an example to make it clear (I commented the most important lines):  
 
     {
@@ -86,7 +88,7 @@ Here's an example to make it clear (I commented the most important lines):
         "show-help" : true,
         "shell-title" : "Testing page",
         "allowed-commands" : [
-            "ls", "echo", "help", "clear", "man", "cat", "cd", "pwd"
+            "ls", "echo", "help", "clear", "man", "cat", "cd", "pwd", "call_plugin"
         ],
         
         "avaiable-files" : [
@@ -108,6 +110,10 @@ Here's an example to make it clear (I commented the most important lines):
                         }
                     ]
             }
+        ],
+        
+        "active-plugins" : [
+             "test", "switch-light-on"
         ]
     }
 
@@ -115,9 +121,10 @@ Here's an example to make it clear (I commented the most important lines):
 * **show-help**: Flag that enable a simple help message.
 * **allowed-commands**: List of the commands we want to make avaiable during navigation.
 * **allowed-files**: List of all files and metadata we want to make available and their relative types.
+* **active-plugins**: List of all active plugins.
 
 ####Adding new commands
-Commands list is completely extensible: You have only to implement their relative `json` file.
+Commands list is completely extensible: You must only implement their relative `json` files.
 Here's an example of a command core implementation file:
 
     {
@@ -134,18 +141,39 @@ Here's an example of a command core implementation file:
 * **name**: Command name and string used to call function within the shell.
 * **description**: Description useful for other important commands like `man`.
 * **source**: Function executed when shell recalls the command (Splitted in array for indentation). Receives the reference to the shell environment (`env`)
-, that allow you to use its methods and properties, and the list of arguments passed.
+, that allows you to use its methods and properties, and the list of arguments passed.
 
 Commands can interact with CMShell through an environment reference and a list of all the arguments passed
  in input during command calling.
 
 *TO BE CONTINUED*
 
+####Create your own plugin
+Plugins are simple `json` file very similar to command one, that provide a unique and formal schema to make the system aware of the
+actions to do.
+
+There are two plugin types:
+
+* **not callable**: Plugin that must be called at system start-up that usually modify the system behavior or appearance.
+* **callable**: Plugin that must not be called at system start-up, but define new functions callable through `call_plugin` command.
+
+I've made two example plugins that could help you to understand the way they must be written:
+
+* **Example 1: Not Callable** => *switch-light-on*
+* **Example 2: Callable** => *test*
+
+Plugins are characterized by `dependencies` property that is a list of all other modules needed for correct execution. If one of these cannot be loaded,
+then the system doesn't set up the target.
+At the moment the system cannot resolve conflicts for cyclic dependency, but this feature will be implemeted in the next version of CMShell.
+
+to call and a list of parameters to communicate.
+Plugins can interact each other (with callable plugins) using the API function `execute_plugin_source(plugin_name, args)`, passing the plugin name we want
+to call and the list of parameters to pass.
+
 #Coming Soon
 * Fix all (complex) directory management issues
 * Full documentation for adding new commands
 * Point out CMShell APIs
-* Plug-in System
 * Temporary variables
 * User authentication and sessions
 * Back-end for CRUD operation on files

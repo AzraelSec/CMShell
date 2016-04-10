@@ -5,7 +5,7 @@
     "show-help" : true,
     "shell-title" : "Testing page",
     "allowed-commands" : [
-        "ls", "echo", "help", "clear", "man", "cat", "cd", "pwd"
+        "ls", "echo", "help", "clear", "man", "cat", "cd", "pwd", "call_plugin"
     ],
     
     "avaiable-files" : [
@@ -27,5 +27,9 @@
                     }
                 ]
         }
+    ],
+    
+    "active-plugins" : [
+        "switch-light-on", "test",  "asd", "asde"
     ]
 }

@@ -76,3 +76,21 @@ body
 {
     margin-left: 30px;
 }
+
+/*
+* SHELL ELEMENTS
+**/
+.regular-file-label
+{
+    color: white;
+}
+
+.link-file-label
+{
+    color: green;
+}
+
+.directory-file-label
+{
+    color: blue;
+}
