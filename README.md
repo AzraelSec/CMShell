@@ -9,7 +9,7 @@ that allows you to share contents in a very original way.
     <tr>
         <th>Version</th>
         <td>
-            1.5
+            1.8
         </td>
     </tr>
     <tr>
