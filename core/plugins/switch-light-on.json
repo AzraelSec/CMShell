@@ -14,5 +14,4 @@
                     "env.execute_plugin_source('test', ['switch-light-on']);",
                 "}"
                ]
-    
 }

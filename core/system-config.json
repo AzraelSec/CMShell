@@ -30,6 +30,6 @@
     ],
     
     "active-plugins" : [
-        "switch-light-on", "test",  "asd", "asde"
+        "test",  "asd", "asde", "switch-light-on"
     ]
 }

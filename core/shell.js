@@ -262,18 +262,21 @@ var shell = function()
     //Method for command calling and executing;
     this.call_command = function(command, environment, args)
     {
-        //Checking if command exists;
-        if($.inArray(command, instance.command_names) < 0)
+        if(command.length > 0)
         {
-            console.log('Command ' + command + ' not found.');
-            this.push_output('Error: command ' + command + ' not found.');
-        }
-        else
-        {
-            //If exists ~> execute the command;
-            console.log('Executing command ' + command + '.');
-            var function_to_call = eval( '(' + instance.command_bodies[command] + ')');
-            function_to_call(environment, args);
+            //Checking if command exists;
+            if ($.inArray(command, instance.command_names) < 0)
+            {
+                console.log('Command ' + command + ' not found.');
+                this.push_output('Error: command ' + command + ' not found.');
+            }
+            else
+            {
+                //If exists ~> execute the command;
+                console.log('Executing command ' + command + '.');
+                var function_to_call = eval('(' + instance.command_bodies[command] + ')');
+                function_to_call(environment, args);
+            }
         }
         
         //History management and input cleaning;
