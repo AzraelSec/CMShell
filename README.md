@@ -38,32 +38,32 @@ that allows you to share contents in a very original way.
     </tr>
 </table>
 
-#Introduction
-##Why should I use It?
+# Introduction
+## Why should I use It?
 "Content Managment Shell": that's simple! Sometimes We only need to manage static contents and the nature
 of the data we want to share just does not justify the use of power and heavy platforms like Wordpress.
 Sometimes We only want to show contents and organize informations in a endearing way and to entice friends to
 read what we published.
 What about the use of a shell?
 
-##Why couldn't I use It?
+## Why couldn't I use It?
 * You need a back-end that allow You to modify data in your website dynamically (Coming Soon)
 * You need a forum-type platform with threads, comments and replies: that's not the project's goal
 * You need an authenticated system that allows you to identify the users that accessed the website (Coming Soon)
 * You want an eye candy noob system and You don't like the shells (Hope You're joking!)
 
-#Documentation
-##Dependencies
+# Documentation
+## Dependencies
 * jQuery (Any Version)
 
-##Cool Features
+## Cool Features
 * Commands and files completition
 * History management
 * Expandable list of commands
 * Directory (absolute and relative path interpretation)
 * Plug-in System (with dependency management) **NEW**
 
-##System Organizzation
+## System Organizzation
 The whole system organizes data and options statically using a tree structure.
 
 * ->CMShell
@@ -80,7 +80,7 @@ There are two (just for now) type of files:
 * **files**: Normal ASCII file, which we want to show over terminal.  
 * **links**: Metadata useful to link important web pages.
 
-####System Configuration
+#### System Configuration
 CMShell is quite completely customizable in a lot of different ways. In particular, There is a simple configuration file named `system-config.json` in which is implemented a
 dictionary that collects all the informations we want to make available to the system.
 Here's an example to make it clear (I commented the most important lines):  
@@ -127,7 +127,7 @@ Here's an example to make it clear (I commented the most important lines):
 * **allowed-files**: List of all files and metadata we want to make available and their relative types.
 * **active-plugins**: List of all active plugins.
 
-####Adding new commands
+#### Adding new commands
 Commands list is completely extensible: You must only implement their relative `json` files.
 Here's an example of a command core implementation file:
 
@@ -152,7 +152,7 @@ Commands can interact with CMShell through an environment reference and a list o
 
 *TO BE CONTINUED*
 
-####Create your own plugin
+#### Create your own plugin
 Plugins are simple `json` file very similar to command one, that provide a unique and formal schema to make the system aware of the
 actions to do.
 
@@ -174,7 +174,7 @@ to call and a list of parameters to communicate.
 Plugins can interact each other (with callable plugins) using the API function `execute_plugin_source(plugin_name, args)`, passing the plugin name we want
 to call and the list of parameters to pass.
 
-#Coming Soon
+# Coming Soon
 * Fix all (complex) directory management issues
 * Full documentation for adding new commands
 * Point out CMShell APIs
