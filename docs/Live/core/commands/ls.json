@@ -1,0 +1,28 @@
+{
+        "name" : "ls",
+        "description" : "ls",
+        "source" : [
+                    "function(env, args)", 
+                    "{",
+                        "var file_list = env.file_informations;",
+                        "var output = '';",
+                        "var index = 0",
+                        "for(i in file_list)",
+                        "{",
+                                "if(file_list[i]['path'] == env.get_actual_directory_path())",
+                                "{",
+                                        "if(index != 0)",
+                                                "output += '<br>';",
+                                        "if(file_list[i]['type'] == 'file')",
+                                                "output += '<span class=\"regular-file-label\">' + file_list[i]['filename'] + '</span> ';",
+                                        "else if(file_list[i]['type'] == 'link')",
+                                                "output += '<span class=\"link-file-label\">' + file_list[i]['filename'] + '</span> ';",
+                                        "else if(file_list[i]['type'] == 'directory')",
+                                                "output += '<span class=\"directory-file-label\">' + file_list[i]['filename'] + '</span> ';",
+                                        "index++;",
+                                "}",
+                        "}",
+                        "env.push_output(output);",
+                     "}"
+                   ]
+}

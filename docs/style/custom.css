@@ -1,0 +1,71 @@
+/*TERMINAL CSS*/
+.terminal-window
+{
+    background-color: grey;
+    border-radius: 5px;
+    margin: 0 auto;
+    padding: 1px;
+}
+.terminal-bar
+{
+    padding: 8px;
+}
+.terminal-body
+{
+    color: white;
+    background-color: #262626;
+    padding: 10px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    line-height: 17px;
+}
+.terminal-body-command
+{
+}
+.terminal-button-red
+{
+    background-color: red;
+    border-radius: 50%;
+    display: inline-block;
+    height: 0.8em;
+    width: 0.8em;
+}
+.terminal-button-yellow
+{
+    background-color: yellow;
+    border-radius: 50%;
+    display: inline-block;
+    height: 0.8em;
+    width: 0.8em;
+}
+.terminal-button-green
+{
+    background-color: green;
+    border-radius: 50%;
+    display: inline-block;
+    height: 0.8em;
+    width: 0.8em;
+}
+
+.text-centered
+{
+    text-align: center;
+}
+
+.icon
+{
+    height: 70px;
+    width: 70px;
+    margin: 0 auto;
+}
+
+.small-icon
+{
+    height: 30px;
+    width: 30px;
+}
+
+.red-text
+{
+    color: red;
+}
