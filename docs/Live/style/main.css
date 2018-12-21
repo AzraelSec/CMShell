@@ -1,0 +1,96 @@
+/*
+  CMShell
+  Author : Federico Gerardi aka 'AzraelSec'
+  Email  : federicogerardi94@gmail.com
+  
+  This project is released under the GPL 3 license.
+
+*/
+
+body
+{
+    color: #eaeae1;
+    background-color: black;
+    font-family: Terminus,courier,monospace,fixed;
+    font-size: 14px;
+    letter-spacing: 1.2px;
+}
+
+#shell-input-field
+{
+    border: hidden;
+    color: white;
+    background-color: transparent;
+    width: 800px;
+}
+
+#shell-container input
+{
+    font-family: Terminus,courier,monospace,fixed;
+    font-size: 14px;
+    letter-spacing: 1.2px;
+}
+
+#shell-container
+{
+    margin-left: 8px;    
+}
+
+#shell-container #shell-output-field pre
+{
+    font-family: Terminus,courier,monospace,fixed;
+    font-size: 14px;
+    letter-spacing: 1.2px;
+    display: inline;
+}
+
+/*
+* FONT CLASSES
+**/
+.big
+{
+    font-size: large;
+}
+
+.green
+{
+    color: green;
+}
+
+.red
+{
+    color: #cc0000;
+}
+
+.blue
+{
+    color: #1a1aff;
+}
+
+.white
+{
+    color: white;
+}
+
+.floated
+{
+    margin-left: 30px;
+}
+
+/*
+* SHELL ELEMENTS
+**/
+.regular-file-label
+{
+    color: white;
+}
+
+.link-file-label
+{
+    color: green;
+}
+
+.directory-file-label
+{
+    color: blue;
+}
